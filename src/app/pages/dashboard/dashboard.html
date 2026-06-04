@@ -1,0 +1,208 @@
+<div class="dashboard">
+  <!-- Top Navigation Bar -->
+  <nav class="top-nav">
+    <div class="nav-brand">
+      <span class="brand-icon">🌾</span>
+      <span class="brand-name">Cereal POS</span>
+    </div>
+    
+    <div class="nav-menu">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+        <span>📊</span> Dashboard
+      </a>
+      <a routerLink="/sales" routerLinkActive="active" class="nav-link">
+        <span>💰</span> Sales
+      </a>
+      <a routerLink="/products" routerLinkActive="active" class="nav-link">
+        <span>🌾</span> Products
+      </a>
+      <a routerLink="/reports" routerLinkActive="active" class="nav-link">
+        <span>📈</span> Reports
+      </a>
+    </div>
+    
+    <div class="nav-user">
+      <span class="user-email">{{ userEmail }}</span>
+      <button class="logout-btn-nav" (click)="logout()">🚪 Logout</button>
+    </div>
+  </nav>
+
+  <!-- Welcome Header -->
+  <div class="welcome-header">
+    <div>
+      <h1>{{ getGreeting() }}, <span class="highlight">Seller</span>! 👋</h1>
+      <p>Here's your shop performance overview</p>
+    </div>
+    <div class="datetime">
+      <span class="date">{{ currentTime | date:'EEEE, MMMM d, y' }}</span>
+      <span class="time">{{ currentTime | date:'h:mm a' }}</span>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card products">
+      <div class="stat-icon">🌾</div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats.totalProducts }}</span>
+        <span class="stat-label">Total Products</span>
+      </div>
+      <div class="stat-trend up">+12% this month</div>
+    </div>
+    
+    <div class="stat-card lowstock">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats.lowStock }}</span>
+        <span class="stat-label">Low Stock Alerts</span>
+      </div>
+      <div class="stat-trend danger">Needs attention</div>
+    </div>
+    
+    <div class="stat-card revenue">
+      <div class="stat-icon">💰</div>
+      <div class="stat-info">
+        <span class="stat-value">KES {{ stats.todayRevenue | number }}</span>
+        <span class="stat-label">Today's Revenue</span>
+      </div>
+      <div class="stat-trend up">+23% vs yesterday</div>
+    </div>
+    
+    <div class="stat-card sales">
+      <div class="stat-icon">📦</div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats.totalSales }}</span>
+        <span class="stat-label">Total Sales</span>
+      </div>
+      <div class="stat-trend">Lifetime sales</div>
+    </div>
+  </div>
+
+  <!-- Low Stock Alert Section -->
+  <div class="alert-section" *ngIf="lowStockProducts.length > 0">
+    <div class="alert-header">
+      <div class="alert-title">
+        <span class="alert-icon">⚠️</span>
+        <span>Low Stock Alert</span>
+      </div>
+      <span class="alert-count">{{ lowStockProducts.length }} products need restock</span>
+    </div>
+    <div class="alert-list">
+      <div class="alert-item" *ngFor="let product of lowStockProducts">
+        <div class="alert-product">
+          <span class="product-name">{{ product.name }}</span>
+          <span class="product-code">{{ product.code }}</span>
+        </div>
+        <div class="alert-stock">
+          <span class="stock-badge critical">Only {{ product.quantity }} left</span>
+          <button class="restock-btn" (click)="restockProduct(product.id || product._id)">Restock</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Action Cards -->
+  <div class="quick-actions">
+    <div class="action-card" (click)="newSale()">
+      <div class="action-icon">➕</div>
+      <h3>New Sale</h3>
+      <p>Record a new transaction</p>
+    </div>
+    
+    <div class="action-card" (click)="updateStock()">
+      <div class="action-icon">📦</div>
+      <h3>Update Stock</h3>
+      <p>Add or remove inventory</p>
+    </div>
+    
+    <div class="action-card" (click)="viewReports()">
+      <div class="action-icon">📊</div>
+      <h3>View Reports</h3>
+      <p>Sales & profit analysis</p>
+    </div>
+    
+    <div class="action-card" (click)="manageProducts()">
+      <div class="action-icon">🌾</div>
+      <h3>Manage Products</h3>
+      <p>Add/edit products</p>
+    </div>
+  </div>
+
+  <!-- Recent Sales & Activity -->
+  <div class="activity-section">
+    <div class="recent-sales">
+      <div class="section-header">
+        <h3>🕐 Recent Transactions</h3>
+        <button class="view-all" (click)="viewAllSales()">View All →</button>
+      </div>
+      
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading transactions...</p>
+      </div>
+      
+      <!-- Recent Sales List -->
+      <div class="sales-list" *ngIf="!isLoading && recentSales.length > 0; else emptySales">
+        <div class="sale-item" *ngFor="let sale of recentSales" (click)="viewSaleDetails(sale.id || sale._id)">
+          <div class="sale-left">
+            <div class="sale-icon">💰</div>
+            <div class="sale-details">
+              <span class="sale-id">#{{ getSaleDisplayId(sale) }}</span>
+              <span class="sale-date">{{ formatSaleDate(sale.date) }}</span>
+              <span class="sale-customer" *ngIf="sale.customerName">
+                👤 {{ sale.customerName }}
+              </span>
+              <span class="sale-customer" *ngIf="!sale.customerName">
+                👤 Walk-in Customer
+              </span>
+            </div>
+          </div>
+          <div class="sale-mid">
+            <span class="sale-items">{{ getSaleItemsCount(sale) }} item(s)</span>
+          </div>
+          <div class="sale-right">
+            <span class="sale-amount">KES {{ getSaleTotal(sale) | number }}</span>
+            <span class="sale-status completed">Completed</span>
+          </div>
+        </div>
+      </div>
+      
+      <ng-template #emptySales>
+        <div class="empty-state">
+          <div class="empty-icon">🛒</div>
+          <p>No sales yet</p>
+          <button class="start-selling" (click)="newSale()">Start Selling</button>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Top Products -->
+    <div class="top-products">
+      <div class="section-header">
+        <h3>🏆 Top Selling Products</h3>
+        <span class="info-badge">All Time</span>
+      </div>
+      <div class="products-list">
+        <div class="product-item" *ngFor="let product of topProducts; let i = index">
+          <div class="product-rank">{{ i + 1 }}</div>
+          <div class="product-info">
+            <span class="product-name">{{ product.name }}</span>
+            <span class="product-sales">{{ product.sold }} units sold</span>
+          </div>
+          <div class="product-revenue">KES {{ product.revenue | number }}</div>
+        </div>
+        <div class="product-item" *ngIf="topProducts.length === 0">
+          <div class="empty-message">No sales data yet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Refresh Button -->
+  <div class="refresh-container" *ngIf="!isLoading">
+    <button class="refresh-btn" (click)="refreshData()">
+      🔄 Refresh Dashboard
+    </button>
+  </div>
+</div>

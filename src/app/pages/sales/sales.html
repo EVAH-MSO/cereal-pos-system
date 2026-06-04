@@ -1,0 +1,107 @@
+<div class="sales-container">
+  <div class="page-header">
+    <h1>💰 New Sale</h1>
+    <p>Record a new transaction</p>
+  </div>
+
+  <div class="sales-layout">
+    <!-- Products Section -->
+    <div class="products-section" [class.cart-open]="showCart">
+      <div class="search-bar">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="searchProducts()"
+          placeholder="🔍 Search products..."
+          class="search-input">
+      </div>
+
+      <div class="products-grid">
+        <div
+          class="product-item"
+          *ngFor="let product of filteredProducts"
+          (click)="addToCart(product)">
+          <div class="product-name">{{ product.name }}</div>
+          <div class="product-price">KES {{ product.sellPrice | number }}</div>
+          <div class="product-stock">{{ product.quantity }} {{ product.unit }} left</div>
+        </div>
+
+        <div class="empty-products" *ngIf="filteredProducts.length === 0">
+          <p>No products available</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Section -->
+    <div class="cart-section" [class.open]="showCart">
+      <div class="cart-header">
+        <h3>🛒 Shopping Cart</h3>
+        <button class="close-cart" (click)="showCart = false">✕</button>
+      </div>
+
+      <div class="cart-items" *ngIf="cart.length > 0; else emptyCart">
+        <div class="cart-item" *ngFor="let item of cart; let i = index">
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-price">KES {{ item.price | number }}</div>
+          </div>
+          <div class="item-quantity">
+            <button type="button" (click)="decreaseQuantity(item)">-</button>
+            <span>{{ item.quantity }}</span>
+            <button type="button" (click)="increaseQuantity(item)">+</button>
+          </div>
+          <div class="item-total">KES {{ item.total | number }}</div>
+          <button class="remove-item" (click)="removeFromCart(i)">🗑️</button>
+        </div>
+      </div>
+
+      <ng-template #emptyCart>
+        <div class="empty-cart">
+          <p>Cart is empty</p>
+          <p class="hint">Click on products to add</p>
+        </div>
+      </ng-template>
+
+      <div class="cart-footer" *ngIf="cart.length > 0">
+        <div class="cart-total">
+          <span>Total:</span>
+          <strong>KES {{ getCartTotal() | number }}</strong>
+        </div>
+
+        <div class="customer-section">
+          <h4>Customer Details</h4>
+          <div class="customer-input">
+            <input type="text" [(ngModel)]="customerName" placeholder="Customer name" class="cust-input">
+            <input type="text" [(ngModel)]="customerPhone" placeholder="Phone (optional)" class="cust-input">
+            <button class="add-customer" (click)="addCustomer()">Add</button>
+          </div>
+
+          <div class="customer-list" *ngIf="customers.length > 0">
+            <select (change)="selectCustomer(customers[$any($event.target).value])" class="cust-select">
+              <option value="">Select existing customer</option>
+              <option *ngFor="let c of customers; let i = index" [value]="i">
+                {{ c.name }} - {{ c.phone }}
+              </option>
+            </select>
+          </div>
+
+          <div class="selected-customer" *ngIf="selectedCustomer">
+            Customer: {{ selectedCustomer.name }}
+          </div>
+        </div>
+
+        <div class="cart-actions">
+          <button class="btn-clear" (click)="clearCart()">Clear Cart</button>
+          <button class="btn-checkout" (click)="processSale()" [disabled]="isProcessing">
+            {{ isProcessing ? 'Processing...' : 'Complete Sale 💰' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Cart Button -->
+  <button class="floating-cart" (click)="showCart = true" *ngIf="!showCart">
+    🛒 {{ cart.length }}
+  </button>
+</div>

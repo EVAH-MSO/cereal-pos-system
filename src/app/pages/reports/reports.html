@@ -1,0 +1,136 @@
+<div class="reports-container">
+  <div class="page-header">
+    <div>
+      <h1>📊 Reports & Analytics</h1>
+      <p>View your business performance</p>
+    </div>
+    <button class="export-btn" (click)="exportReport()" *ngIf="filteredSales.length > 0">
+      📥 Export CSV
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading reports...</p>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <!-- Date Range Selector -->
+    <div class="date-range">
+      <div class="range-buttons">
+        <button [class.active]="dateRange === 'today'" (click)="setDateRange('today')">Today</button>
+        <button [class.active]="dateRange === 'week'" (click)="setDateRange('week')">This Week</button>
+        <button [class.active]="dateRange === 'month'" (click)="setDateRange('month')">This Month</button>
+        <button [class.active]="dateRange === 'year'" (click)="setDateRange('year')">This Year</button>
+      </div>
+      
+      <div class="custom-range">
+        <label for="startDate">Custom Range:
+        <input for="startDate" type="date" [(ngModel)]="startDate" (change)="filterSales()">
+        </label>
+        <span>to</span>
+        <label for="endDate">End Date:
+        <input for="endDate" type="date" [(ngModel)]="endDate" (change)="filterSales()">
+        </label>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-info">
+          <span class="stat-value">KES {{ totalRevenue | number }}</span>
+          <span class="stat-label">Total Revenue</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-info">
+          <span class="stat-value">{{ totalSales }}</span>
+          <span class="stat-label">Total Sales</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">🛒</div>
+        <div class="stat-info">
+          <span class="stat-value">{{ totalItems }}</span>
+          <span class="stat-label">Items Sold</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-info">
+          <span class="stat-value">KES {{ averageOrder | number: '1.0-0' }}</span>
+          <span class="stat-label">Average Order</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="section" *ngIf="getTopProducts().length > 0">
+      <h3>🏆 Top Selling Products</h3>
+      <div class="top-products">
+        <div class="product-rank" *ngFor="let product of getTopProducts(); let i = index">
+          <div class="rank-number">{{ i + 1 }}</div>
+          <div class="rank-info">
+            <span class="rank-name">{{ product.name }}</span>
+            <span class="rank-stats">{{ product.quantity }} units sold</span>
+          </div>
+          <div class="rank-revenue">KES {{ product.revenue | number }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Sales Chart -->
+    <div class="section" *ngIf="getDailySales().length > 0">
+      <h3>📈 Daily Sales Trend</h3>
+      <div class="daily-chart">
+        <div class="chart-bar" *ngFor="let day of getDailySales()">
+          <div class="bar" [style.height.%]="(day.total / totalRevenue) * 100"></div>
+          <div class="bar-label">{{ day.date }}</div>
+          <div class="bar-value">KES {{ day.total | number }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Sales Table -->
+    <div class="section" *ngIf="filteredSales.length > 0">
+      <h3>🕐 Recent Transactions</h3>
+      <div class="table-container">
+        <table class="sales-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Customer</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let sale of filteredSales.slice().reverse()">
+              <td>{{ sale.date | date:'MMM d, y h:mm a' }}</td>
+              <td>{{ sale.customerName || 'Walk-in Customer' }}</td>
+              <td>{{ sale.items?.length || 0 }} items</td>
+              <td class="amount">KES {{ sale.total | number }}</td>
+              <td><span class="status completed">Completed</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredSales.length === 0 && !isLoading">
+      <div class="empty-icon">📊</div>
+      <h3>No sales data</h3>
+      <p>No sales found for the selected date range</p>
+      <button class="btn-primary" routerLink="/sales">Start Selling</button>
+    </div>
+  </div>
+</div>

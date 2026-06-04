@@ -1,0 +1,49 @@
+<div class="login-container">
+
+  
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo">🌾</div>
+      <h1>Cereal Shop</h1>
+      <p>Welcome to the Cereal Shop Management System</p>
+      
+
+    </div>
+    
+    <form (ngSubmit)="login()" class="login-form">
+      <div class="input-group">
+        <label>📧 Email Address</label>
+        <input 
+          type="email" 
+          [(ngModel)]="email" 
+          name="email" 
+          placeholder="seller@cerealshop.com" 
+          autocomplete="email"
+          required>
+      </div>
+      
+      <div class="input-group">
+        <label>🔒 Password</label>
+        <input 
+          type="password" 
+          [(ngModel)]="password" 
+          name="password" 
+          placeholder="Enter your password" 
+          autocomplete="current-password"
+          required>
+      </div>
+      
+      <div class="error-message" *ngIf="errorMessage">
+        ⚠️ {{ errorMessage }}
+      </div>
+      
+      <button type="submit" class="login-btn" [disabled]="isLoading">
+        {{ isLoading ? 'Logging in...' : 'Login to Dashboard' }}
+      </button>
+    </form>
+    
+    <div class="login-footer">
+      <p>© 2023 Cereal Shop. All rights reserved.</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,253 @@
+.reports-container {
+  padding: 1rem;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+  font-size: 1.5rem;
+  color: #1a2e1a;
+}
+
+.page-header p {
+  color: #6b7280;
+}
+
+.date-range {
+  background: white;
+  padding: 1rem;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+}
+
+.range-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.range-buttons button {
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.range-buttons button.active {
+  background: #2d5a27;
+  color: white;
+}
+
+.custom-range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.custom-range input {
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.export-btn {
+  padding: 0.5rem 1rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-icon {
+  font-size: 2rem;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a2e1a;
+  display: block;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+.section {
+  background: white;
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.section h3 {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.top-products {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.product-rank {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  background: #f9fafb;
+  border-radius: 10px;
+}
+
+.rank-number {
+  width: 30px;
+  height: 30px;
+  background: #2d5a27;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.rank-info {
+  flex: 1;
+}
+
+.rank-name {
+  display: block;
+  font-weight: 500;
+}
+
+.rank-stats {
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+.rank-revenue {
+  font-weight: 600;
+  color: #10b981;
+}
+
+.daily-chart {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 1rem 0;
+  min-height: 200px;
+  align-items: flex-end;
+}
+
+.chart-bar {
+  flex: 1;
+  min-width: 60px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.bar {
+  width: 40px;
+  background: #2d5a27;
+  border-radius: 8px 8px 0 0;
+  transition: height 0.3s;
+  min-height: 5px;
+}
+
+.bar-label {
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+.bar-value {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.sales-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sales-table th,
+.sales-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sales-table th {
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.amount {
+  font-weight: 600;
+  color: #10b981;
+}
+
+.status {
+  padding: 0.2rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+}
+
+.status.completed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.empty-message, .empty-row {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .custom-range {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .daily-chart {
+    min-width: 500px;
+  }
+}

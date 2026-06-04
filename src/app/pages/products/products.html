@@ -1,0 +1,177 @@
+<div class="products-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>🌾 Products</h1>
+      <p>Manage your inventory and product catalog</p>
+    </div>
+    <button class="btn-primary" (click)="openAddModal()">+ Add Product</button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="filterProducts()"
+        placeholder="🔍 Search products..." 
+        class="search-input">
+    </div>
+    <select [(ngModel)]="categoryFilter" (change)="filterProducts()" class="filter-select">
+      <option value="all">All Categories</option>
+      <option *ngFor="let cat of categories.slice(1)" [value]="cat">{{ cat }}</option>
+    </select>
+  </div>
+
+  <!-- Stats Summary -->
+ <div class="stats-row">
+  <div class="stat-badge">
+    Total: {{ products.length }} products
+  </div>
+
+  <div class="stat-badge low">
+    Low Stock: {{ getLowStockCount() }}
+  </div>
+
+  <div class="stat-badge out">
+    Out of Stock: {{ getOutOfStockCount() }}
+  </div>
+</div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading products...</p>
+  </div>
+
+  <!-- Products Grid -->
+  <div class="products-grid" *ngIf="!isLoading">
+    <div class="product-card" *ngFor="let product of filteredProducts">
+      <div class="product-header">
+        <div class="product-icon">🌾</div>
+        <div class="product-status" [class]="getStockStatus(product.quantity, product.minStock)">
+          {{ getStockStatus(product.quantity, product.minStock) === 'out' ? 'Out of Stock' : 
+             getStockStatus(product.quantity, product.minStock) === 'low' ? 'Low Stock' : 'In Stock' }}
+        </div>
+      </div>
+      
+      <div class="product-body">
+        <h3>{{ product.name }}</h3>
+        <div class="product-code">{{ product.code }}</div>
+        <div class="product-category">{{ product.category }}</div>
+        
+        <div class="product-stats">
+          <div class="stat">
+            <span class="label">Stock:</span>
+            <span class="value">{{ product.quantity }} {{ product.unit }}</span>
+          </div>
+          <div class="stat">
+            <span class="label">Buy Price:</span>
+            <span class="value">KES {{ product.buyPrice | number }}</span>
+          </div>
+          <div class="stat">
+            <span class="label">Sell Price:</span>
+            <span class="value">KES {{ product.sellPrice | number }}</span>
+          </div>
+          <div class="stat">
+            <span class="label">Profit:</span>
+            <span class="value profit">KES {{ (product.sellPrice - product.buyPrice) | number }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="product-actions">
+        <button class="btn-update" (click)="updateStock(product)">📦 Update Stock</button>
+        <button class="btn-edit" (click)="openEditModal(product)">✏️ Edit</button>
+        <button class="btn-delete" (click)="deleteProduct(product.id!, product.name)">🗑️ Delete</button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredProducts.length === 0">
+      <div class="empty-icon">📦</div>
+      <h3>No products found</h3>
+      <p>Add your first product to start selling</p>
+      <button class="btn-primary" (click)="openAddModal()">+ Add Product</button>
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{{ isEditing ? 'Edit Product' : 'Add Product' }}</h3>
+        <button class="close-btn" (click)="showModal = false">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" [(ngModel)]="selectedProduct.name" class="form-control" placeholder="e.g., Premium Maize">
+          </div>
+          <div class="form-group">
+            <label>Product Code</label>
+            <input type="text" [(ngModel)]="selectedProduct.code" class="form-control" placeholder="e.g., MAIZE-001">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category</label>
+            <select [(ngModel)]="selectedProduct.category" class="form-control">
+              <option *ngFor="let cat of categories.slice(1)" [value]="cat">{{ cat }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Unit</label>
+            <select [(ngModel)]="selectedProduct.unit" class="form-control">
+              <option *ngFor="let u of units" [value]="u">{{ u }}</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" [(ngModel)]="selectedProduct.quantity" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Min Stock Alert</label>
+            <input type="number" [(ngModel)]="selectedProduct.minStock" class="form-control">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Buy Price (KES)</label>
+            <input type="number" [(ngModel)]="selectedProduct.buyPrice" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Sell Price (KES)</label>
+            <input type="number" [(ngModel)]="selectedProduct.sellPrice" class="form-control">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="selectedProduct.description" class="form-control" rows="2"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Status</label>
+          <select [(ngModel)]="selectedProduct.status" class="form-control">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="showModal = false">Cancel</button>
+        <button class="btn-save" (click)="saveProduct()">Save Product</button>
+      </div>
+    </div>
+  </div>
+</div>
