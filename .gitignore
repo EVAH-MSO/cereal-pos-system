@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # Compiled output
@@ -41,3 +42,33 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+=======
+# Firebase build and deployment files
+/firebase-debug.log
+/firebase-debug.*.log
+.firebaserc
+
+# Firebase Hosting
+/firebase.json
+*.cache
+hosting/.cache
+
+# Firebase Functions
+/functions/node_modules/
+/functions/.env
+/functions/package-lock.json
+
+# Firebase Emulators
+/firebase-*.zip
+/.firebase/
+/emulator-ui/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (local configs)
+/.env.*
+>>>>>>> e751cc53a221df9a9c4234d0c634cfeb0dc490a4
